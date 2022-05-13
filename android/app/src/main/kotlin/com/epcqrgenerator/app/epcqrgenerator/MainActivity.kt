@@ -1,4 +1,4 @@
-package com.epcqrgenerator.app.epcqrgenerator
+package com.epcqrgenerator.app
 
 import io.flutter.embedding.android.FlutterActivity
 
