@@ -1,35 +1,115 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final _formKey = GlobalKey<FormBuilderState>();
 
-  // This widget is the root of your application.
+  List<Map<String, dynamic>> fields() {
+    return [
+      {
+        'name': 'service_tag',
+        'label': 'Service tag',
+        'value': 'BCD',
+      },
+      {'name': 'version', 'label': 'Version', 'value': '001'},
+      {
+        'name': 'character_set',
+        'label': 'Character set',
+        'value': '1',
+      },
+      {'name': 'identification', 'label': 'Identification', 'value': 'SCT'},
+      {
+        'name': 'bic',
+        'label': 'BIC',
+        'value': '',
+      },
+      {
+        'name': 'name',
+        'label': 'Name',
+        'value': '',
+      },
+      {
+        'name': 'iban',
+        'label': 'IBAN',
+        'value': '',
+      },
+      {
+        'name': 'amount',
+        'label': 'Amount',
+        'value': 'EUR',
+      },
+      {
+        'name': 'reason',
+        'label': 'Reason',
+        'value': '',
+      },
+      {
+        'name': 'invoice_reference',
+        'label': 'Invoice reference',
+        'value': '',
+      },
+      {
+        'name': 'text',
+        'label': 'Text',
+        'value': '',
+      },
+      {
+        'name': 'information',
+        'label': 'Information',
+        'value': '',
+      }
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'EPC QR',
         theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
           primarySwatch: Colors.blue,
         ),
         home: Scaffold(
           appBar: AppBar(
-            title: Text('Flutter demo'),
+            title: Text('EPC QR'),
           ),
           body: Center(
-            child: Text('Flutter demo'),
+            child: FormBuilder(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ...fields().map((e) => Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: FormBuilderTextField(
+                              name: e['name'],
+                              decoration:
+                                  InputDecoration(labelText: e['label']),
+                              initialValue: e['value'],
+                            ),
+                          )),
+                      ElevatedButton(
+                        child: Text('Create qr code'),
+                        onPressed: () {
+                          _formKey.currentState?.save();
+
+                          var values = _formKey.currentState!.value;
+                          var string = "";
+
+                          for (var field in fields()) {
+                            string += values[field['name']];
+                            string += "\n";
+                          }
+
+                          print(string);
+                        },
+                      )
+                    ],
+                  ),
+                )),
           ),
         ));
   }
