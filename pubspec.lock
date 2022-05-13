@@ -136,14 +136,19 @@ packages:
     source: hosted
     version: "1.8.0"
   qr:
+    dependency: transitive
+    description:
+      name: qr
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
+  qr_flutter:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: e86cd3cc4ea6e43bb9def3c0227ad9064e12bfeb
-      url: "https://github.com/kevmoo/qr.dart"
-    source: git
-    version: "3.0.1"
+      name: qr_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -207,3 +212,4 @@ packages:
     version: "2.1.1"
 sdks:
   dart: ">=2.16.2 <3.0.0"
+  flutter: ">=1.16.0"
