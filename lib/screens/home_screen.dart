@@ -128,6 +128,31 @@ class EPCForm extends StatelessWidget {
                         return AlertDialog(content: qrImage);
                       });
                 },
+              ),
+              ElevatedButton(
+                child: Text('Save as template'),
+                onPressed: () async {
+                  _formKey.currentState!.save();
+
+                  var values = _formKey.currentState!.value;
+
+                  await showDialog(context: context, builder: (context)  {
+                    return AlertDialog(
+                      content: FormBuilderTextField(
+                        name: 'name',
+                        decoration: InputDecoration(
+                          labelText: 'test'
+                        )
+                      ),
+                      actions: [
+                        TextButton(
+                          child: Text('Save'),
+                          onPressed: () {},
+                        )
+                      ],
+                    );
+                  });
+                },
               )
             ],
           ),
