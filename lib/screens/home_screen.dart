@@ -1,25 +1,27 @@
+import 'dart:convert';
+
 import 'package:epcqrgenerator/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('EPC QR'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.list),
-              onPressed: () => Navigator.of(context).pushNamed(MyAppRouter.CODES),
-            ),
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () => Navigator.of(context).pushNamed(MyAppRouter.SETTINGS),
-            )
-          ]
-        ),
+        appBar: AppBar(title: Text('EPC QR'), actions: [
+          IconButton(
+            icon: Icon(Icons.list),
+            onPressed: () => Navigator.of(context).pushNamed(MyAppRouter.CODES),
+          ),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () =>
+                Navigator.of(context).pushNamed(MyAppRouter.SETTINGS),
+          )
+        ]),
         body: Center(
           child: EPCForm(),
         ));
@@ -120,8 +122,6 @@ class EPCForm extends StatelessWidget {
                   final qrCode = QrCode(4, QrErrorCorrectLevel.H)
                     ..addData(string);
 
-                  print(string);
-
                   await showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -135,23 +135,67 @@ class EPCForm extends StatelessWidget {
                   _formKey.currentState!.save();
 
                   var values = _formKey.currentState!.value;
+                  var string = "";
 
-                  await showDialog(context: context, builder: (context)  {
-                    return AlertDialog(
-                      content: FormBuilderTextField(
-                        name: 'name',
-                        decoration: InputDecoration(
-                          labelText: 'test'
-                        )
-                      ),
-                      actions: [
-                        TextButton(
-                          child: Text('Save'),
-                          onPressed: () {},
-                        )
-                      ],
-                    );
-                  });
+                  for (var field in fields()) {
+                    string += values[field['name']];
+                    string += "\n";
+                  }
+
+                  final _dialogFormKey = GlobalKey<FormBuilderState>();
+
+                  await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Save as template'),
+                          content: FormBuilder(
+                            key: _dialogFormKey,
+                            child: FormBuilderTextField(
+                              name: 'name',
+                              decoration: InputDecoration(labelText: 'Name'),
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required()
+                              ]),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              child: Text('Cancel'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                            TextButton(
+                              child: Text('Save'),
+                              onPressed: () async {
+                                _dialogFormKey.currentState!.validate();
+                                _dialogFormKey.currentState!.save();
+
+                                final preferences = await SharedPreferences.getInstance();
+
+                                final String codesString = await preferences.getString('codes') ?? '[]';
+
+                                final codesJson = jsonDecode(codesString);
+
+                                codesJson.add({
+                                  'name': _dialogFormKey.currentState!.value['name'],
+                                  'code': string,
+                                });
+
+                                print(codesJson);
+
+                                await preferences.setString('codes', jsonEncode(codesJson));
+
+                                // Close this dialog.
+                                Navigator.of(context).pop();
+
+                                // Show a snackbar.
+                                var snackbar = SnackBar(content: Text('QR code saved'));
+                                ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                              },
+                            ),
+                          ],
+                        );
+                      });
                 },
               )
             ],

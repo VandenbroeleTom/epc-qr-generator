@@ -2,6 +2,7 @@ import 'package:epcqrgenerator/router.dart';
 import 'package:epcqrgenerator/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/localization/l10n.dart';
 import 'package:qr/qr.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -14,14 +15,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-        title: 'EPC QR',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        routes: MyAppRouter.routes(),
-        initialRoute: MyAppRouter.HOME,
-        home: HomeScreen(),
+      title: 'EPC QR',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      routes: MyAppRouter.routes(),
+      initialRoute: MyAppRouter.HOME,
+      home: HomeScreen(),
+      localizationsDelegates: [
+        FormBuilderLocalizations.delegate,
+      ],
     );
   }
 }
-
