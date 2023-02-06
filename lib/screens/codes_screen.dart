@@ -23,29 +23,21 @@ class CodesScreen extends StatelessWidget {
 
           SharedPreferences preferences = snapshot.data as SharedPreferences;
 
-          var codes = preferences.getString('codes') ?? '[]';
-          List codesJson = jsonDecode(codes);
+          var codes = preferences.getStringList('codes') ?? [];
+
+          if (codes.isEmpty) {
+            // todo: add a button to create a new code
+            return const Center(
+              child: Text('No saved codes yet.'),
+            );
+          }
 
           return ListView.builder(
-            itemCount: codesJson.length,
+            itemCount: codes.length,
             itemBuilder: (context, index) {
-              var name = codesJson[index]['name'];
-              var code = codesJson[index]['code'];
 
               return ListTile(
-                title: Text(name),
-                onTap: () async {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        content: QrImage(
-                          data: code,
-                        ),
-                      );
-                    }
-                  );
-                },
+                title: Text(codes[index]),
                 onLongPress: () async {
                   await showDialog(
                     context: context,
@@ -54,14 +46,14 @@ class CodesScreen extends StatelessWidget {
                         title: Text('Delete qr code?'),
                         actions: [
                           TextButton(
-                            child: Text('Cancel'),
+                              child: Text('Cancel'),
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                           TextButton(
                             child: Text('Confirm'),
                             onPressed: () {
-                              codesJson.removeAt(index);
-                              preferences.setString('codes', jsonEncode(codesJson));
+                              codes.removeAt(index);
+                              preferences.setStringList('codes', codes);
 
                               // Close dialog.
                               Navigator.of(context).pop();

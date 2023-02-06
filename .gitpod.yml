@@ -1,6 +1,15 @@
+
 image:
   file: .gitpod.Dockerfile
 
+tasks:
+  - before: echo 'PATH="$PATH:$HOME/flutter/bin"' >> $HOME/.bashrc
+  - init: flutter pub get
+  - command: flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0
+
 ports:
   - port: 8080
-    onOpen: open-preview
+    onOpen: open-browser
+vscode:
+  extensions:
+    - Dart-Code.flutter
